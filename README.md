@@ -2,11 +2,15 @@
 
 The files in this repository were used to configure the network depicted below.
 
-![Network Diagram](./diagrams/AWS_ELK_Diagram)
+![Network Diagram](./diagrams/AWS_ELK_Diagram.jpg)
 
-These files have been tested and used to generate a live ELK deployment on AWS. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _install-elk.yml_ file may be used to install only certain pieces of it, such as Filebeat.
+These files have been tested and used to generate a live ELK deployment on AWS. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _elk_config.yml_ file may be used to install only certain pieces of it, such as Filebeat.
 
   - _TODO: Enter the playbook file._
+(./ansible/ansible_config.yml"Ansible")
+(./ansible/elk_config.yml"ELK")
+(./ansible/filebeat_config.yml"Filebeat")
+(./ansible/metricbeat_config.yml"Metricbeat")
 
 This document contains the following details:
 - Description of the Topology
@@ -52,18 +56,22 @@ Machines within the network can only be accessed by the Jump Box.
 
 A summary of the Security Groups effecting the network is illustrated below.
 
-| Name       | inbound rules                                                         | Source IP(s) |
-|------------|-----------------------------------------------------------------------|--------------|
-| ELK_SG     | 80/HTTP 22/SSH all/ICMP 5044/Logstash 55600/Kibana 9200/Elasticsearch | <jumpbox>    |
-| Windows_SG | 3389/RDP all/ICMP                                                     | <your IP>    |
-| DVWA_SG    | 80/HTTP 22/SSH all/ICMP                                               | <jumpbox>    |
-| Windows_SG | 3389/RDP all/ICMP                                                     | <your IP>    |
+| Name       | inbound rules                                                         |
+|------------|-----------------------------------------------------------------------|
+| ELK_SG     | 80/HTTP 22/SSH all/ICMP 5044/Logstash                                 |
+|            | 55600/Kibana 9200/Elasticsearch                                       |
+| Windows_SG | 3389/RDP all/ICMP                                                     |
+| DVWA_SG    | 80/HTTP 22/SSH all/ICMP                                               |
+| Windows_SG | 3389/RDP all/ICMP                                                     |
+| Jumpbox    | 22/SSH                                                                |
+
+**allowed inbound sources can be viewed in the diagram above
 
 ### Elk Configuration
 
 Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because...
 - _What is the main advantage of automating configuration with Ansible?_
->configuration may be quick and trivial on a small network, as a network grows, the workload for configuring multiplies with each additional machine. automation removes the potentially time consuming and expensive process of configuring each individual machine._
+>configuration may be quick and trivial on a small network. However, as a network grows the workload (time and brainpower) of maintaining it. automation removes the potentially time consuming and expensive process of deploying & configuring each machine manually._
 
 The playbook implements the following tasks:
 - _TODO: In 3-5 bullets, explain the steps of the ELK installation play. E.g., install Docker; download image; etc._
@@ -111,9 +119,12 @@ find the line that reads '[webservers]' and enter the following three lines
 [dvwa]
 10.10.2.75
 10.10.2.35
+[elk]
+10.10.2.29
 ```
+NOTE: entering the IP for the elk group will now will save time later.
 ```
-ansible-playbook install-elk.yml --key-file=<key.pem>
+ansible-playbook elk_config.yml --key-file=<key.pem>
 ```
 this will attempt to install Elk on the 'dvwa' group in the install-elk.yml file
 ```
@@ -122,38 +133,38 @@ sudo docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 -it --name elk sebp/elk
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
-![docker ps screenshot](Images/docker_ps_output.png)
+![docker ps screenshot](ansible/docker_ps_output.PNG)
 
 ### Target Machines & Beats
-This ELK server is configured to monitor the following machines:
-- _List the IP addresses of the machines you are monitoring_
+- This ELK server is configured to monitor the following machines:
 >  10.10.2.75, 10.10.2.32
-We have installed the following Beats on these machines:
-- _Specify which Beats you successfully installed_
-- Filebeat, Metricbeat
 
-These Beats allow us to collect the following information from each machine:
-- _TODO: In 1-2 sentences, explain what kind of data each beat collects, and provide 1 example of what you expect to see._
-- Filebeat monitors the log files, collects log events then forwards that data to Logstash.
+- We have installed the following Beats on these machines:
+> Filebeat, Metricbeat
 
-- metricbeat
+- These Beats allow us to collect the following information from each machine:
+>Filebeat monitors the log files, collects log events then forwards that data to Logstash.
+
+>metricbeat collects metric data about it's host. metrics gathered from alerts based on data such as RAM usage can alert SOC analysts when machines on a network are acting abnormally.
 
 ### Using the Playbook
 In order to use the playbook, you will need to have an Ansible control node already configured. Assuming you have such a control node provisioned:
 
 SSH into the control node and follow the steps below:
-- Copy the install-elk.yml file to Jumpbox (10.10.0.149).
-- Update the hosts file to the IP addresses of the DVWA1 & 2 machines and ELK
-- Run the playbook, and navigate to check that the installation worked as expected.
-
-_TODO: Answer the following questions to fill in the blanks:_
-- _Which file is the playbook? Where do you copy it?_
-- _Which file do you update to make Ansible run the playbook on a specific machine? How do I specify which machine to install the ELK server on versus which to install Filebeat on?_
-you can create different Groups
+- Copy the playbook file(s) their respective jumpbox(es).
+- if you haven't already, Update the hosts file to the IP addresses of the DVWA1 & 2 machines and ELK
+- Run the playbook
 ```
-[example_group]
-192.158.0.1
-192.158.0.2
-[another_group]
-192.158.0.10
-- _Which URL do you navigate to in order to check that the ELK server is running?
+ansible-playbook <playbook_file.yaml --key-file <key.pem>
+```
+
+### Answer the following questions to fill in the blanks:_
+- Which file is the playbook? Where do you copy it?_
+> the playbook files are labelas as <ansible/elk/filebeat/metricbeat>_config.yml. they should be copied into jumpbox, elk, dvwa1&2, dvwa1&2 respectively.
+```
+sudo docker cp <key.pem> <container id>:/root
+```
+
+- Which file do you update to make Ansible run the playbook on a specific machine? How do I specify which machine to install the ELK server on versus which to install Filebeat on?_
+> #jumbox
+/etc/ansible/hosts
