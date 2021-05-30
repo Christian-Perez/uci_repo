@@ -6,7 +6,7 @@ The files in this repository were used to configure the network depicted below.
 
 These files have been tested and used to generate a live ELK deployment on AWS. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _elk_config.yml_ file may be used to install only certain pieces of it, such as Filebeat.
 
-  - _TODO: Enter the playbook file._
+## Playbook files
 (./ansible/ansible_config.yml"Ansible")
 (./ansible/elk_config.yml"ELK")
 (./ansible/filebeat_config.yml"Filebeat")
@@ -20,24 +20,23 @@ This document contains the following details:
   - Machines Being Monitored
 - How to Use the Ansible Build
 
-
 ### Description of the Topology
 
 The main purpose of this network is to expose a load-balanced and monitored instance of DVWA, the Damn Vulnerable Web Application.
 
 Load balancing ensures that the application will be highly available, in addition to restricting access to the network.
-- _What aspect of security do load balancers protect? What is the advantage of a jump box?_
-> load balancers protect a network's availability by distributing workload to multiple machines
+- What aspect of security do load balancers protect? What is the advantage of a jump box?
+> load balancers protect a network's availability by distributing workload to multiple machines. Distributing workload across many machines and/or regions increases the availability of the resources on a network and positively impacts uptime.
 
 Integrating an ELK server allows users to easily monitor the vulnerable VMs for changes to the file system and system logs.
-- _What does Filebeat watch for?_
+- What does Filebeat watch for?
 >changes/other changes to the file system
 
-- _What does Metricbeat record?_
+- What does Metricbeat record?
 > metrics about the machine it is hosted on, such as uptime, cpu usage, etc
 
 The configuration details of each machine may be found below.
-_Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdown_tables) to add/remove values from the table_.
+Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdown_tables) to add/remove values from the table_.
 
 | Name           | Function                                   | IP Addresses   | Operating System |
 |----------------|--------------------------------------------|----------------|------------------|
@@ -52,14 +51,15 @@ _Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdow
 The machines on the internal network are not exposed to the public Internet.
 
 Machines within the network can only be accessed by the Jump Box.
-- _Jump Box Internal IP(10.10.0.149)_
+- Jump Box Internal IP
+>(10.10.0.149)
 
-A summary of the Security Groups effecting the network is illustrated below.
+- A summary of the Security Groups effecting the network is illustrated below.
 
 | Name       | inbound rules                                                         |
 |------------|-----------------------------------------------------------------------|
 | ELK_SG     | 80/HTTP 22/SSH all/ICMP 5044/Logstash                                 |
-|            | 55600/Kibana 9200/Elasticsearch                                       |
+| ...        | 55600/Kibana 9200/Elasticsearch                                       |
 | Windows_SG | 3389/RDP all/ICMP                                                     |
 | DVWA_SG    | 80/HTTP 22/SSH all/ICMP                                               |
 | Windows_SG | 3389/RDP all/ICMP                                                     |
@@ -70,11 +70,12 @@ A summary of the Security Groups effecting the network is illustrated below.
 ### Elk Configuration
 
 Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because...
-- _What is the main advantage of automating configuration with Ansible?_
->configuration may be quick and trivial on a small network. However, as a network grows the workload (time and brainpower) of maintaining it. automation removes the potentially time consuming and expensive process of deploying & configuring each machine manually._
+
+- What is the main advantage of automating configuration with Ansible?
+>Configuration may be quick and trivial on a small network. As a network grows so does the workload (time and brainpower) of maintaining it. Automation removes the potentially time consuming and expensive process of deploying & configuring each machine manually.
 
 The playbook implements the following tasks:
-- _TODO: In 3-5 bullets, explain the steps of the ELK installation play. E.g., install Docker; download image; etc._
+## explain the steps of the ELK installation play.
 - update the jumpbox machine then download & install docker
 ```
 sudo yum update
